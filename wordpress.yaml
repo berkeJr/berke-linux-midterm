@@ -1,0 +1,39 @@
+version: "3"
+
+services: 
+  wordpress: 
+    depends on: 
+     - mariadb 
+    image: wordpress:fm-alpine
+    environment: 
+     WORDPRESS_DB_HOST: db 3306
+     WORDPRESS_DB_NAME: my_db
+     WORDPRESS_DB_USER: berke
+     WORDPRESS_DB_PASSWORD: 123456
+    volumes: 
+     - ./database:/var/lib/mysql
+  
+  mariadb: 
+    image: mariadb 
+    environment: 
+      MYSQL_DATABASE: connection
+      MYSQL_USER: berke
+      MYSQL_PASSWORD: 12345678
+      MYSQL_ROOT_PASSWORD: 12345678
+    volumes: 
+     - ./database:/var/lib/mysql 
+    
+  nginx:
+    image: nginx 
+    ports: 
+     - "80:80"
+    volumes: 
+     - ./nginx.xonf:/etc/ninx/ngninx.conf 
+     - wp_data:/var/www/html
+
+  certbot: 
+    image: certbot
+    volumes: 
+     - wp_data:/var/www/html
+    command: certonly --webroot-path=/var/www/html --email sayin.berke@std.izu.edu.tr --agree tos -d sayinberke.me
+
